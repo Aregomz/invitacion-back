@@ -16,6 +16,9 @@ const rsvpRoutes = require('./routes/rsvpRoutes');
 // Importar middleware de errores
 const errorHandler = require('./middleware/errorHandler');
 
+// Importar configuración de Railway
+const railwayConfig = require('../railway.config');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -48,7 +51,9 @@ app.get('/health', (req, res) => {
   res.json({
     success: true,
     message: 'Servidor funcionando correctamente',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+    database: railwayConfig.isRailway() ? 'PostgreSQL' : 'SQLite'
   });
 });
 
@@ -58,6 +63,7 @@ app.get('/', (req, res) => {
     success: true,
     message: 'API de Invitaciones de Fiestas',
     version: '1.0.0',
+    environment: process.env.NODE_ENV || 'development',
     endpoints: {
       events: '/api/events',
       rsvp: '/api/rsvp',
@@ -80,6 +86,16 @@ app.use(errorHandler);
 // Función para inicializar la base de datos y el servidor
 const initializeServer = async () => {
   try {
+    // Validar configuración
+    const configValidation = railwayConfig.validateConfig();
+    if (!configValidation.isValid) {
+      console.error('❌ Error de configuración:');
+      configValidation.errors.forEach(error => console.error(`   - ${error}`));
+      process.exit(1);
+    }
+
+    console.log('✅ Configuración válida');
+
     // Sincronizar la base de datos
     await sequelize.authenticate();
     console.log('✅ Conexión a la base de datos establecida correctamente.');

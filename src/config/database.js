@@ -2,12 +2,14 @@ const { Sequelize } = require('sequelize');
 require('dotenv').config({ path: '../config.env' });
 
 // Configuración para Railway (PostgreSQL) o local (SQLite)
-const isProduction = process.env.NODE_ENV === 'production' || process.env.DATABASE_URL;
+const isProduction = process.env.NODE_ENV === 'production';
+const hasDatabaseUrl = process.env.DATABASE_URL && process.env.DATABASE_URL !== '';
 
 let sequelize;
 
-if (isProduction) {
+if (isProduction && hasDatabaseUrl) {
   // Configuración para Railway con PostgreSQL
+  console.log('🔗 Configurando PostgreSQL para Railway...');
   sequelize = new Sequelize(process.env.DATABASE_URL, {
     dialect: 'postgres',
     dialectOptions: {
@@ -25,6 +27,7 @@ if (isProduction) {
   });
 } else {
   // Configuración local con SQLite
+  console.log('🔗 Configurando SQLite para desarrollo local...');
   sequelize = new Sequelize({
     dialect: 'sqlite',
     storage: './database.sqlite',
