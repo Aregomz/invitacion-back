@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-// Reemplaza con tu URL real de Railway
+// ⚠️ REEMPLAZA ESTA URL CON TU URL REAL DE RAILWAY
 const RAILWAY_URL = 'https://tu-proyecto.railway.app';
 
 async function testRailwayDeployment() {
@@ -38,6 +38,7 @@ async function testRailwayDeployment() {
     console.log('\n');
 
     console.log('🎉 ¡Todos los tests pasaron! El backend está funcionando correctamente en Railway.');
+    console.log('\n📱 URL para el frontend:', RAILWAY_URL);
 
   } catch (error) {
     console.error('❌ Error en las pruebas:', error.message);
